@@ -21,6 +21,7 @@ struct Element {
 	double HBC[4][4];
 	int liczbaPunktowIntegracji = 2;
 	double P[4];
+	double C[4][4];
 
 	Element() : liczbaPunktowIntegracji(2) {
 		for (int i = 0; i < 4; i++) {
@@ -29,11 +30,13 @@ struct Element {
 				H[i][j] = 0.0;
 				HBC[i][j] = 0.0;
 				P[i] = 0.0;
+				C[i][j] = 0;
 			}
 		}
 	}
 
-	void createElement(int liczbaPunktow, Node* nodes, double conductivity, double alfa, double tot) {
+	void createElement(int liczbaPunktow, Node* nodes, double conductivity, double alfa, double tot, double density, double specificHeat, double simulationStepTime, double initialTemp) {
+
 		liczbaPunktowIntegracji = liczbaPunktow;
 
 		ElementUniwersalny element = ElementUniwersalny(liczbaPunktow);
@@ -50,7 +53,7 @@ struct Element {
 
 		int n = liczbaPunktow * liczbaPunktow;
 
-		Pw punktyIWagi = metodaGaussa(2, 2);
+		Pw punktyIWagi = metodaGaussa(2, liczbaPunktowIntegracji);
 		
 		double** dNidx = new double* [n];
 		double** dNidy = new double* [n];
@@ -67,10 +70,10 @@ struct Element {
 			double dydEta = element.tabEta[k][0] * y[0] + element.tabEta[k][1] * y[1] + element.tabEta[k][2] * y[2] + element.tabEta[k][3] * y[3];
 			double dydKsi = element.tabKsi[k][0] * y[0] + element.tabKsi[k][1] * y[1] + element.tabKsi[k][2] * y[2] + element.tabKsi[k][3] * y[3];
 
-			double wyznacznik[2][2] = { {dxdKsi, dydKsi}, {dxdEta, dydEta} };
+			double wyznacznik[2][2] = { {dydEta, -dydKsi}, { -dxdEta, dxdKsi} };
 
 
-			double det = dxdKsi * dydEta - dydKsi * dxdEta;
+			double det = dydEta * dxdKsi - (-dydKsi * -dxdEta);
 
 
 			for (int j = 0; j < n; j++) {
@@ -96,8 +99,8 @@ struct Element {
 			for (int i = 0; i < n; i++) {
 				for (int j = 0; j < 4; j++) {
 					H[i][j] += conductivity * (dNidx[k][i] * dNidx[k][j] + dNidy[k][i] * dNidy[k][j]) * det;
-
-				}
+					C[i][j] += density * specificHeat * (element.tabN[k][i] * element.tabN[k][j]) * det;
+				} // razy wagi pomnozyc jjeszcze 
 			}
 		}
 
@@ -137,6 +140,15 @@ struct Element {
 					}
 				}
 				
+			}
+		}
+
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				H[i][j] += HBC[i][j];
+				H[i][j] = H[i][j] + C[i][j] / simulationStepTime;
+				
+				P[i] += C[i][j] / simulationStepTime * initialTemp;
 			}
 		}
 
@@ -195,6 +207,18 @@ struct Element {
 			std::cout << "\n";
 		}
 		std::cout << endl;
+
+		std::cout << "C" << index << endl;
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				std::cout << C[i][j] << " ";
+			}
+
+			std::cout << "\n";
+		}
+		cout << endl;
 	}
 };
 

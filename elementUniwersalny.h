@@ -15,6 +15,7 @@ struct ElementUniwersalny
     int punktyIntegracji;
     double** tabKsi = NULL;
     double** tabEta = NULL;
+    double** tabN = NULL;
 
     Surface surface[4];
 
@@ -23,16 +24,18 @@ struct ElementUniwersalny
         punktyIntegracji = liczbaPunktow;
         int punktyIntegracjiKwadrat = pow(punktyIntegracji, 2);
 
-        Pw punktyIWagi = metodaGaussa(2, 2);
+        Pw punktyIWagi = metodaGaussa(2, liczbaPunktow);
 
 
         tabKsi = new double* [punktyIntegracjiKwadrat];
         tabEta = new double* [punktyIntegracjiKwadrat];
+        tabN = new double* [punktyIntegracjiKwadrat];
 
         for (int i = 0; i < punktyIntegracjiKwadrat; i++)
         {
             tabKsi[i] = new double[4];
             tabEta[i] = new double[4];
+            tabN[i] = new double[4];
         }
 
         int* iE = new int[punktyIntegracjiKwadrat];
@@ -90,17 +93,31 @@ struct ElementUniwersalny
              {{-1, sqrt(1.0 / 3.0)}, {-1, -sqrt(1.0 / 3.0)}}
         };
 
+        double bcNodes2[4][3][2] = {
+            {{-sqrt(3.0 / 5.0), -1.0}, {0.0, -1.0}, {sqrt(3.0 / 5.0), -1.0}},
+             {{1, -sqrt(3.0 / 5.0)}, {1.0, 0.0}, {1, sqrt(3.0 / 5.0)}},
+             {{sqrt(3.0 / 5.0), 1.0}, {0.0, 1.0}, {-sqrt(3.0 / 5.0), 1.0}},
+             {{-1.0, sqrt(3.0 / 5.0)}, {-1.0, 0.0}, {-1.0, -sqrt(3.0 / 5.0)}}
+        };
+
         for (int i = 0; i < 4; i++) {
             surface[i].N = new double* [punktyIntegracji];
 
             for (int j = 0; j < punktyIntegracji; j++) {
                 surface[i].N[j] = new double[4];
             
-                surface[i].N[j][0] = (1.0 / 4.0) * (1 - bcNodes[i][j][0]) * (1 - bcNodes[i][j][1]);
-                surface[i].N[j][1] = (1.0 / 4.0) * (1 + bcNodes[i][j][0]) * (1 - bcNodes[i][j][1]);
-                surface[i].N[j][2] = (1.0 / 4.0) * (1 + bcNodes[i][j][0]) * (1 + bcNodes[i][j][1]);
-                surface[i].N[j][3] = (1.0 / 4.0) * (1 - bcNodes[i][j][0]) * (1 + bcNodes[i][j][1]);
-
+                if (punktyIntegracji == 2) {
+                    surface[i].N[j][0] = (1.0 / 4.0) * (1 - bcNodes[i][j][0]) * (1 - bcNodes[i][j][1]);
+                    surface[i].N[j][1] = (1.0 / 4.0) * (1 + bcNodes[i][j][0]) * (1 - bcNodes[i][j][1]);
+                    surface[i].N[j][2] = (1.0 / 4.0) * (1 + bcNodes[i][j][0]) * (1 + bcNodes[i][j][1]);
+                    surface[i].N[j][3] = (1.0 / 4.0) * (1 - bcNodes[i][j][0]) * (1 + bcNodes[i][j][1]);
+                }
+                else if (punktyIntegracji == 3) {
+                    surface[i].N[j][0] = (1.0 / 4.0) * (1 - bcNodes2[i][j][0]) * (1 - bcNodes2[i][j][1]);
+                    surface[i].N[j][1] = (1.0 / 4.0) * (1 + bcNodes2[i][j][0]) * (1 - bcNodes2[i][j][1]);
+                    surface[i].N[j][2] = (1.0 / 4.0) * (1 + bcNodes2[i][j][0]) * (1 + bcNodes2[i][j][1]);
+                    surface[i].N[j][3] = (1.0 / 4.0) * (1 - bcNodes2[i][j][0]) * (1 + bcNodes2[i][j][1]);
+                }
                /* cout << surface[i].N[j][0] << " ";
                 cout << surface[i].N[j][1] << " ";
                 cout << surface[i].N[j][2] << " ";
@@ -115,6 +132,20 @@ struct ElementUniwersalny
             delete[] iE;
             delete[] iKsi;
 
+
+            double nodesC[4][2] = {
+             {-sqrt(1.0 / 3.0), -sqrt(1.0 / 3.0)},
+             {sqrt(1.0 / 3.0), -sqrt(1.0 / 3.0)},
+             {sqrt(1.0 / 3.0), sqrt(1.0 / 3.0)},
+             {-sqrt(1.0 / 3.0), sqrt(1.0 / 3.0)}
+            };
+
+            for (int i = 0; i < punktyIntegracjiKwadrat; i++) {
+                tabN[i][0] = (1.0 / 4.0) * (1.0 - nodesC[i][0]) * (1.0 - nodesC[i][1]);
+                tabN[i][1] = (1.0 / 4.0) * (1.0 + nodesC[i][0]) * (1.0 - nodesC[i][1]);
+                tabN[i][2] = (1.0 / 4.0) * (1.0 + nodesC[i][0]) * (1.0 + nodesC[i][1]);
+                tabN[i][3] = (1.0 / 4.0) * (1.0 - nodesC[i][0]) * (1.0 + nodesC[i][1]);
+            }
     }
 
 

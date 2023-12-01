@@ -9,18 +9,26 @@
 struct Soe {
 	double** H;
 	double* P;
+    double** C;
 
-	Soe(Grid grid) {
+	Soe(Grid grid, GlobalData globalData) {
+        double** Gauss;
 
 		H = new double* [grid.nN];
 		P = new double[grid.nN];
+        Gauss = new double* [grid.nN];
+        C = new double* [grid.nN];
 
 		for (int z = 0; z < grid.nN; z++) {
 			H[z] = new double[grid.nN];
+            Gauss[z] = new double[grid.nN+1];
+            C[z] = new double[grid.nN];
 
 			P[z] = 0.0;
 			for (int j = 0; j < grid.nN; j++) {
 				H[z][j] = 0.0;
+                Gauss[z][j] = 0.0;
+                C[z][j] = 0.0;
 			}
 		}
 
@@ -28,15 +36,28 @@ struct Soe {
 			for (int j = 0; j < 4; j++) {
 				for (int k = 0; k < 4; k++) {
 					H[grid.elements[i].ID[j]-1][grid.elements[i].ID[k]-1] += grid.elements[i].H[j][k];
+                    C[grid.elements[i].ID[j] - 1][grid.elements[i].ID[k] - 1] += grid.elements[i].C[j][k];
 				}
 
 				P[grid.elements[i].ID[j]-1] += grid.elements[i].P[j];
 			}
 		}
 
+        //macierz do uk³adu rownan
+        for (int i = 0; i < grid.nN; i++) {
+            for (int j = 0; j < grid.nN; j++) {
+                Gauss[i][j] = H[i][j];
+            }
+        }
+        for (int i = 0; i < grid.nN; i++) {
+            Gauss[i][grid.nN] = P[i];
+        }
+
+        ukladRownanGauss(grid.nN, Gauss);
+
 		for (int i = 0; i < grid.nN; i++) {
 			for (int j = 0; j < grid.nN; j++) {
-				cout << H[j][j] << " ";
+				cout << H[i][j] << " ";
 			}
 			cout << endl;
 		}
@@ -46,10 +67,20 @@ struct Soe {
 		}
 		cout << endl;
 
+        cout << "C" << endl;
+        for (int i = 0; i < grid.nN; i++) {
+            for (int j = 0; j < grid.nN; j++) {
+                cout << C[i][j] << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+
+       
+
 	}
 
-	void ukladRownanGauss(Grid grid, double** M) {
-        int size = grid.nN;
+	void ukladRownanGauss(int size, double** M) {
 
         double m = 0; int k = 0;
         for (int i = 0; i < size; i++) {

@@ -7,6 +7,7 @@
 #include "metodaGaussa.h"
 #include "grid.h"
 #include "elementUniwersalny.h"
+#include "soe.h"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ int main() {
 	Grid grid = Grid();
 
 
-	getDataFromFile("Test2_4_4_MixGrid.txt", globalData, grid);
+	getDataFromFile("Test1_4_4.txt", globalData, grid);
 	//showGlobalData(globalData);
 	showGrid(grid);
 
@@ -29,11 +30,13 @@ int main() {
 	//ElementUniwersalny element = ElementUniwersalny(2);
 	//element.printElementUniversal();
 
-	ElementUniwersalny elU = ElementUniwersalny(2);
+	//ElementUniwersalny elU = ElementUniwersalny(2);
 
 	//elU.printElementUniversal();
 	// 
 	//Element el = Element(2);
+
+	Soe soe = Soe(grid, globalData);
 
 
 	return 0;
@@ -138,7 +141,7 @@ int getDataFromFile(string filename, GlobalData& globalData, Grid& grid) {
 				grid.elements[i].ID[2] = stod(three);
 				grid.elements[i].ID[3] = stod(four);
 
-				grid.elements[i].createElement(2, grid.nodes, globalData.conductivity, globalData.alfa, globalData.tot);
+				grid.elements[i].createElement(2, grid.nodes, globalData.conductivity, globalData.alfa, globalData.tot, globalData.density, globalData.specificHeat, globalData.simulationStepTime, globalData.initialTemp);
 				grid.elements[i].showData(i);
 			}
 		}
