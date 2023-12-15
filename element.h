@@ -19,11 +19,11 @@ struct Element {
 	int ID[4];
 	double H[4][4];
 	double HBC[4][4];
-	int liczbaPunktowIntegracji = 2;
+	int liczbaPunktowIntegracji = 0;
 	double P[4];
 	double C[4][4];
 
-	Element() : liczbaPunktowIntegracji(2) {
+	Element() : liczbaPunktowIntegracji() {
 		for (int i = 0; i < 4; i++) {
 			ID[i] = 0;
 			for (int j = 0; j < 4; j++) {
@@ -76,7 +76,7 @@ struct Element {
 			double det = dydEta * dxdKsi - (-dydKsi * -dxdEta);
 
 
-			for (int j = 0; j < n; j++) {
+			for (int j = 0; j < 4; j++) {
 				dNidx[k][j] = 1.0 / det * (wyznacznik[0][0] * element.tabKsi[k][j] + wyznacznik[0][1] * element.tabEta[k][j]);
 				dNidy[k][j] = 1.0 / det * (wyznacznik[1][0] * element.tabKsi[k][j] + wyznacznik[1][1] * element.tabEta[k][j]);
 			}
@@ -96,10 +96,35 @@ struct Element {
 				cout << endl;
 			}*/
 
-			for (int i = 0; i < n; i++) {
+			/*double* tabWFor3point = {
+
+			}*/
+			double* tabW = new double[n]; //tablica wag 
+			if (liczbaPunktow == 2) {
+				tabW[0] = 1;//punktyIWagi.w[0] * punktyIWagi.w[0];
+				tabW[1] = 1;// punktyIWagi.w[0] * punktyIWagi.w[1]; //potem
+				tabW[2] = 1;// punktyIWagi.w[1] * punktyIWagi.w[1];
+
+				tabW[3] = 1;// punktyIWagi.w[1] * punktyIWagi.w[2];
+			}
+			else if (liczbaPunktow == 3) {
+				tabW[0] = punktyIWagi.w[0] * punktyIWagi.w[0];
+				tabW[1] = punktyIWagi.w[0] * punktyIWagi.w[1];
+				tabW[2] = punktyIWagi.w[0] * punktyIWagi.w[2];
+
+				tabW[3] = punktyIWagi.w[1] * punktyIWagi.w[0];
+				tabW[4] = punktyIWagi.w[1] * punktyIWagi.w[1];
+				tabW[5] = punktyIWagi.w[1] * punktyIWagi.w[2];
+
+				tabW[6] = punktyIWagi.w[2] * punktyIWagi.w[0];
+				tabW[7] = punktyIWagi.w[2] * punktyIWagi.w[1];
+				tabW[8] = punktyIWagi.w[2] * punktyIWagi.w[2];
+			};
+
+			for (int i = 0; i < 4; i++) {
 				for (int j = 0; j < 4; j++) {
-					H[i][j] += conductivity * (dNidx[k][i] * dNidx[k][j] + dNidy[k][i] * dNidy[k][j]) * det;
-					C[i][j] += density * specificHeat * (element.tabN[k][i] * element.tabN[k][j]) * det;
+					H[i][j] += conductivity * tabW[k] * (dNidx[k][i] * dNidx[k][j] + dNidy[k][i] * dNidy[k][j]) * det;
+					C[i][j] += density * specificHeat * tabW[k] * (element.tabN[k][i] * element.tabN[k][j]) * det;
 				} // razy wagi pomnozyc jjeszcze 
 			}
 		}
@@ -142,13 +167,13 @@ struct Element {
 				
 			}
 		}
-
+		
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				H[i][j] += HBC[i][j];
 				H[i][j] = H[i][j] + C[i][j] / simulationStepTime;
 				
-				P[i] += C[i][j] / simulationStepTime * initialTemp;
+				//P[i] += C[i][j] / simulationStepTime * initialTemp;
 			}
 		}
 

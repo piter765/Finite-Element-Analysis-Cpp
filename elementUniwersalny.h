@@ -134,17 +134,31 @@ struct ElementUniwersalny
 
 
             double nodesC[4][2] = {
-             {-sqrt(1.0 / 3.0), -sqrt(1.0 / 3.0)},
-             {sqrt(1.0 / 3.0), -sqrt(1.0 / 3.0)},
-             {sqrt(1.0 / 3.0), sqrt(1.0 / 3.0)},
-             {-sqrt(1.0 / 3.0), sqrt(1.0 / 3.0)}
+             {-1.0 / sqrt(3.0), -1.0 / sqrt(3.0)},
+             {sqrt(1.0 / 3.0), -1.0 / sqrt(3.0)},
+             {-1.0 / sqrt(3.0), sqrt(1.0 / 3.0)},
+             {sqrt(1.0 / 3.0), sqrt(1.0 / 3.0)}
+            };
+
+            double nodesC2[9][2] = {
+                {-sqrt(3.0 / 5.0), -sqrt(3.0 / 5.0)}, {0.0, -sqrt(3.0 / 5.0)}, {sqrt(3.0 / 5.0), -sqrt(3.0 / 5.0)},
+                {-sqrt(3.0 / 5.0), 0.0}, {0.0, 0.0}, {sqrt(3.0 / 5.0), 0.0},
+                {-sqrt(3.0 / 5.0), sqrt(3.0 / 5.0)}, {0.0, sqrt(3.0 / 5.0)}, {sqrt(3.0 / 5.0), sqrt(3.0 / 5.0)}
             };
 
             for (int i = 0; i < punktyIntegracjiKwadrat; i++) {
-                tabN[i][0] = (1.0 / 4.0) * (1.0 - nodesC[i][0]) * (1.0 - nodesC[i][1]);
-                tabN[i][1] = (1.0 / 4.0) * (1.0 + nodesC[i][0]) * (1.0 - nodesC[i][1]);
-                tabN[i][2] = (1.0 / 4.0) * (1.0 + nodesC[i][0]) * (1.0 + nodesC[i][1]);
-                tabN[i][3] = (1.0 / 4.0) * (1.0 - nodesC[i][0]) * (1.0 + nodesC[i][1]);
+                if (punktyIntegracji == 2) {
+                    tabN[i][0] = (1.0 / 4.0) * (1.0 - nodesC[i][0]) * (1.0 - nodesC[i][1]);
+                    tabN[i][1] = (1.0 / 4.0) * (1.0 + nodesC[i][0]) * (1.0 - nodesC[i][1]);
+                    tabN[i][2] = (1.0 / 4.0) * (1.0 + nodesC[i][0]) * (1.0 + nodesC[i][1]);
+                    tabN[i][3] = (1.0 / 4.0) * (1.0 - nodesC[i][0]) * (1.0 + nodesC[i][1]);
+                }
+                else if (punktyIntegracji == 3) {
+                    tabN[i][0] = (1.0 / 4.0) * (1.0 - nodesC2[i][0]) * (1.0 - nodesC2[i][1]);
+                    tabN[i][1] = (1.0 / 4.0) * (1.0 + nodesC2[i][0]) * (1.0 - nodesC2[i][1]);
+                    tabN[i][2] = (1.0 / 4.0) * (1.0 + nodesC2[i][0]) * (1.0 + nodesC2[i][1]);
+                    tabN[i][3] = (1.0 / 4.0) * (1.0 - nodesC2[i][0]) * (1.0 + nodesC2[i][1]);
+                }
             }
     }
 

@@ -9,9 +9,11 @@
 #include "elementUniwersalny.h"
 #include "soe.h"
 
+#define NUM_OF_POINTS 3
 using namespace std;
 
 int getDataFromFile(string filename, GlobalData& globalData, Grid& grid);
+void generateParaViewFile(Grid grid, int i, Soe& soe);
 
 int main() {
 	std::cout << setprecision(10);
@@ -19,7 +21,7 @@ int main() {
 	Grid grid = Grid();
 
 
-	getDataFromFile("Test1_4_4.txt", globalData, grid);
+	getDataFromFile("Test2_4_4_MixGrid.txt", globalData, grid);
 	//showGlobalData(globalData);
 	showGrid(grid);
 
@@ -36,7 +38,30 @@ int main() {
 	// 
 	//Element el = Element(2);
 
+	int iterations = globalData.simulationTime / globalData.simulationStepTime;
+
 	Soe soe = Soe(grid, globalData);
+	soe.calculate();
+
+	generateParaViewFile(soe.grid, 0, soe); //dla initialTemp
+
+	for (int i = 1; i <= iterations; i++) {
+		soe.computeTempP();
+		soe.calculateTemperature();
+		/*if (i < 3) {
+			soe.showSoe();
+		}*/
+		
+		
+		for (int k = 0; k < soe.grid.nE; k++) {
+			std::cout << "temp!!!!: " << soe.tabNewTemperatures[k] << " ";
+			
+		}
+	
+
+		generateParaViewFile(soe.grid, i, soe);
+
+	}
 
 
 	return 0;
@@ -91,6 +116,7 @@ int getDataFromFile(string filename, GlobalData& globalData, Grid& grid) {
 				y.pop_back();
 				grid.nodes[i].x = stod(x);
 				grid.nodes[i].y = stod(y);
+				grid.nodes[i].t = globalData.initialTemp;
 			}
 		}
 		else if (keyword == "*BC") {
@@ -141,8 +167,8 @@ int getDataFromFile(string filename, GlobalData& globalData, Grid& grid) {
 				grid.elements[i].ID[2] = stod(three);
 				grid.elements[i].ID[3] = stod(four);
 
-				grid.elements[i].createElement(2, grid.nodes, globalData.conductivity, globalData.alfa, globalData.tot, globalData.density, globalData.specificHeat, globalData.simulationStepTime, globalData.initialTemp);
-				grid.elements[i].showData(i);
+				grid.elements[i].createElement(NUM_OF_POINTS, grid.nodes, globalData.conductivity, globalData.alfa, globalData.tot, globalData.density, globalData.specificHeat, globalData.simulationStepTime, globalData.initialTemp);
+				//grid.elements[i].showData(i);
 			}
 		}
 		
@@ -150,3 +176,52 @@ int getDataFromFile(string filename, GlobalData& globalData, Grid& grid) {
 
 }
 
+void generateParaViewFile(Grid grid, int i, Soe& soe) {
+	std::string fileName = "file_" + std::to_string(i) + ".vtk";
+
+	ofstream outputFile(fileName);
+	if (outputFile.is_open()) {
+
+		/*# vtk DataFile Version 2.0
+			Unstructured Grid Example
+			ASCII
+			DATASET UNSTRUCTURED_GRID*/
+		outputFile << "# vtk DataFile Version 2.0\nUnstructured Grid Example\nASCII\nDATASET UNSTRUCTURED_GRID\n\n";
+		outputFile << "POINTS " + std::to_string(grid.nN) + " float\n";
+
+		for (int i = 0; i < grid.nN; i++) {
+			outputFile << grid.nodes[i].x << " " << grid.nodes[i].y << " 0\n";
+		}
+		outputFile << "\n";
+
+		outputFile << "CELLS " << grid.nE << " " << grid.nE * 5 << "\n";
+		for (int i = 0; i < grid.nE; i++) {
+			outputFile << "4 ";
+			for (int j = 0; j < 4; j++) { // na razie 4 tyle co w ID jest
+				outputFile << grid.elements[i].ID[j] - 1 << " ";
+			}
+			outputFile << "\n";
+		}
+		outputFile << "\n";
+
+		outputFile << "CELL_TYPES " << grid.nE << "\n";
+		for (int i = 0; i < grid.nE; i++) {
+			outputFile << 9 << "\n";
+		}
+		outputFile << "\n";
+
+		outputFile << "POINT_DATA " << grid.nN << "\n";
+		outputFile << "SCALARS Temp float 1" << "\n";
+		outputFile << "LOOKUP_TABLE default " << "\n";
+
+		for (int i = 0; i < grid.nN; i++) {
+			outputFile << soe.tabNewTemperatures[i] << "\n";
+		}
+
+		outputFile.close();
+		std::cout << "Data has been written to the file." << std::endl;
+	}
+	else {
+		std::cerr << "Unable to open file for writing." << std::endl;
+	}
+}
