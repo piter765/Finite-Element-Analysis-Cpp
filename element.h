@@ -8,8 +8,8 @@
 struct Node {
 	double x;
 	double y;
-	double t;
 	int BC;
+	double t;
 
 	Node(double x1 = 0.0, double y1 = 0.0, double t1 = 0.0, int BC = 0) : x(x1), y(y1), t(t1), BC(0) {};
 };
@@ -30,7 +30,7 @@ struct Element {
 				H[i][j] = 0.0;
 				HBC[i][j] = 0.0;
 				P[i] = 0.0;
-				C[i][j] = 0;
+				C[i][j] = 0.0;
 			}
 		}
 	}
@@ -101,11 +101,10 @@ struct Element {
 			}*/
 			double* tabW = new double[n]; //tablica wag 
 			if (liczbaPunktow == 2) {
-				tabW[0] = 1;//punktyIWagi.w[0] * punktyIWagi.w[0];
-				tabW[1] = 1;// punktyIWagi.w[0] * punktyIWagi.w[1]; //potem
-				tabW[2] = 1;// punktyIWagi.w[1] * punktyIWagi.w[1];
-
-				tabW[3] = 1;// punktyIWagi.w[1] * punktyIWagi.w[2];
+				tabW[0] = 1.0;
+				tabW[1] = 1.0;
+				tabW[2] = 1.0;
+				tabW[3] = 1.0;
 			}
 			else if (liczbaPunktow == 3) {
 				tabW[0] = punktyIWagi.w[0] * punktyIWagi.w[0];
@@ -125,7 +124,7 @@ struct Element {
 				for (int j = 0; j < 4; j++) {
 					H[i][j] += conductivity * tabW[k] * (dNidx[k][i] * dNidx[k][j] + dNidy[k][i] * dNidy[k][j]) * det;
 					C[i][j] += density * specificHeat * tabW[k] * (element.tabN[k][i] * element.tabN[k][j]) * det;
-				} // razy wagi pomnozyc jjeszcze 
+				}
 			}
 		}
 

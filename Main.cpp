@@ -21,7 +21,7 @@ int main() {
 	Grid grid = Grid();
 
 
-	getDataFromFile("Test2_4_4_MixGrid.txt", globalData, grid);
+	getDataFromFile("Test1_4_4.txt", globalData, grid);
 	//showGlobalData(globalData);
 	showGrid(grid);
 
@@ -52,12 +52,11 @@ int main() {
 			soe.showSoe();
 		}*/
 		
-		
-		for (int k = 0; k < soe.grid.nE; k++) {
+		/*for (int k = 0; k < soe.grid.nE; k++) {
 			std::cout << "temp!!!!: " << soe.tabNewTemperatures[k] << " ";
 			
-		}
-	
+		}*/
+		soe.showMaxAndMinTempInRange();
 
 		generateParaViewFile(soe.grid, i, soe);
 
@@ -197,7 +196,7 @@ void generateParaViewFile(Grid grid, int i, Soe& soe) {
 		outputFile << "CELLS " << grid.nE << " " << grid.nE * 5 << "\n";
 		for (int i = 0; i < grid.nE; i++) {
 			outputFile << "4 ";
-			for (int j = 0; j < 4; j++) { // na razie 4 tyle co w ID jest
+			for (int j = 0; j < 4; j++) {
 				outputFile << grid.elements[i].ID[j] - 1 << " ";
 			}
 			outputFile << "\n";
@@ -219,7 +218,7 @@ void generateParaViewFile(Grid grid, int i, Soe& soe) {
 		}
 
 		outputFile.close();
-		std::cout << "Data has been written to the file." << std::endl;
+		//std::cout << "Data has been written to the file." << std::endl;
 	}
 	else {
 		std::cerr << "Unable to open file for writing." << std::endl;

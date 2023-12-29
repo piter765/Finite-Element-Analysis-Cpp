@@ -149,9 +149,9 @@ struct Soe {
 
         }
 
-        for (int i = 0; i < size; i++) {
+        /*for (int i = 0; i < size; i++) {
             cout << "Rozwiazanie ukladu rownan: x" << i << "=" << tabx[i] << endl;
-        }
+        }*/
 
         return tabx;
 	}
@@ -185,6 +185,23 @@ struct Soe {
         }
         cout << endl;
     }
+
+    void showMaxAndMinTempInRange() {
+        double minTemp = std::numeric_limits<double>::max();
+        double maxTemp = std::numeric_limits<double>::min();
+
+        for (int i = 0; i < grid.nN; i++) {
+            if (tabNewTemperatures[i] < minTemp) {
+                minTemp = tabNewTemperatures[i];
+            }
+            if (tabNewTemperatures[i] > maxTemp) {
+                maxTemp = tabNewTemperatures[i];
+            }
+        }
+    
+        cout << "min temperature = " << minTemp << " max temperature = " << maxTemp << "\n";
+    }
+
 
 };
 

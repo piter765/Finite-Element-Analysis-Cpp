@@ -51,16 +51,13 @@ struct ElementUniwersalny
                 iKsi[0] = 0; iKsi[1] = 1; iKsi[2] = 0; iKsi[3] = 1;
             }
             else if (punktyIntegracji == 3) {
-                iE[0] = 0; iE[1] = 1; iE[2] = 2;
-                iE[3] = 0; iE[4] = 1; iE[5] = 2;
-                iE[6] = 0; iE[7] = 1; iE[8] = 2;
+                iE[0] = 0; iE[1] = 0; iE[2] = 0;
+                iE[3] = 1; iE[4] = 1; iE[5] = 1;
+                iE[6] = 2; iE[7] = 2; iE[8] = 2;
 
-                //pierwszy rz¹d ujemne czyli 0
-                //potem zerowe czyli 1
-                //potem dodatnie czyli 2
-                iKsi[0] = 0; iKsi[1] = 0; iKsi[2] = 0;
-                iKsi[3] = 1; iKsi[4] = 1; iKsi[5] = 1;
-                iKsi[6] = 2; iKsi[7] = 2; iKsi[8] = 2;
+                iKsi[0] = 0; iKsi[1] = 1; iKsi[2] = 2;
+                iKsi[3] = 0; iKsi[4] = 1; iKsi[5] = 2;
+                iKsi[6] = 0; iKsi[7] = 1; iKsi[8] = 2;
             }
             else if (punktyIntegracji == 4) {
                 iE[0] = 0; iE[1] = 0; iE[2] = 0; iE[3] = 0;
@@ -74,28 +71,28 @@ struct ElementUniwersalny
                 iKsi[12] = 0; iKsi[13] = 1; iKsi[14] = 2; iKsi[15] = 3;
             }
 
-            tabKsi[i][0] = -0.25 * (1 - punktyIWagi.p[iE[i]]);
-            tabKsi[i][1] = 0.25 * (1 - punktyIWagi.p[iE[i]]);
-            tabKsi[i][2] = 0.25 * (1 + punktyIWagi.p[iE[i]]);
-            tabKsi[i][3] = -0.25 * (1 + punktyIWagi.p[iE[i]]);
+            tabKsi[i][0] = -0.25 * (1.0 - punktyIWagi.p[iE[i]]);
+            tabKsi[i][1] = 0.25 * (1.0 - punktyIWagi.p[iE[i]]);
+            tabKsi[i][2] = 0.25 * (1.0 + punktyIWagi.p[iE[i]]);
+            tabKsi[i][3] = -0.25 * (1.0 + punktyIWagi.p[iE[i]]);
 
-            tabEta[i][0] = -0.25 * (1 - punktyIWagi.p[iKsi[i]]);
-            tabEta[i][1] = -0.25 * (1 + punktyIWagi.p[iKsi[i]]);
-            tabEta[i][2] = 0.25 * (1 + punktyIWagi.p[iKsi[i]]);
-            tabEta[i][3] = 0.25 * (1 - punktyIWagi.p[iKsi[i]]);
+            tabEta[i][0] = -0.25 * (1.0 - punktyIWagi.p[iKsi[i]]);
+            tabEta[i][1] = -0.25 * (1.0 + punktyIWagi.p[iKsi[i]]);
+            tabEta[i][2] = 0.25 * (1.0 + punktyIWagi.p[iKsi[i]]);
+            tabEta[i][3] = 0.25 * (1.0 - punktyIWagi.p[iKsi[i]]);
 
         }
         //surface
         double bcNodes[4][2][2] = {
-             {{-sqrt(1.0 / 3.0), -1}, {sqrt(1.0 / 3.0), -1}},
-             {{1, -sqrt(1.0 / 3.0)}, {1, sqrt(1.0 / 3.0)}},
-             {{sqrt(1.0 / 3.0), 1}, {-sqrt(1.0 / 3.0), 1}},
-             {{-1, sqrt(1.0 / 3.0)}, {-1, -sqrt(1.0 / 3.0)}}
+             {{-sqrt(1.0 / 3.0), -1.0}, {sqrt(1.0 / 3.0), -1.0}},
+             {{1.0, -sqrt(1.0 / 3.0)}, {1.0, sqrt(1.0 / 3.0)}},
+             {{sqrt(1.0 / 3.0), 1.0}, {-sqrt(1.0 / 3.0), 1.0}},
+             {{-1.0, sqrt(1.0 / 3.0)}, {-1.0, -sqrt(1.0 / 3.0)}}
         };
 
         double bcNodes2[4][3][2] = {
             {{-sqrt(3.0 / 5.0), -1.0}, {0.0, -1.0}, {sqrt(3.0 / 5.0), -1.0}},
-             {{1, -sqrt(3.0 / 5.0)}, {1.0, 0.0}, {1, sqrt(3.0 / 5.0)}},
+             {{1.0, -sqrt(3.0 / 5.0)}, {1.0, 0.0}, {1.0, sqrt(3.0 / 5.0)}},
              {{sqrt(3.0 / 5.0), 1.0}, {0.0, 1.0}, {-sqrt(3.0 / 5.0), 1.0}},
              {{-1.0, sqrt(3.0 / 5.0)}, {-1.0, 0.0}, {-1.0, -sqrt(3.0 / 5.0)}}
         };
